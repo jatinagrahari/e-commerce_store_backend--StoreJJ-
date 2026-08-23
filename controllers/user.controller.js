@@ -39,40 +39,39 @@ const registerUser = asyncHandler(async (req, res) => {
     password,
   });
 
-  if (user) {
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    user.verificationPass.otp = otp;
-    user.verificationPass.expiryTime = new Date(Date.now() + 10 * 60 * 1000);
-    await user.save({ validateBeforeSave: true });
-    const message = verificationEmail(otp);
-    await sendEmail(email, "Verify your Store JJ account", message);
-  } else {
+  if (!user) {
     throw new ApiError(500, "Something went wrong registering the user");
   }
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-  const createdUser = await User.findOne({ email }).select("-password");
+  user.verificationPass.otp = otp;
+  user.verificationPass.expiryTime = new Date(Date.now() + 10 * 60 * 1000);
+
+  await user.save({ validateBeforeSave: true });
+
+  const message = verificationEmail(otp);
+
+  await sendEmail(email, "Verify your Store JJ account", message);
+
+  const { token } = await generateToken(user._id);
+
+  const createdUser = await User.findOne({ email }).select(
+    "-password -verificationPass -token -role",
+  );
 
   if (!createdUser) {
     throw new ApiError(401, "user fetched failed");
   }
 
-  return res.status(201).json(
-    new ApiResponse(
-      201,
-      {
-        user: {
-          _id: user._id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-          verified: user.verified,
-          verificationPass: user.verificationPass,
-          token: await generateToken(user._id),
-        },
-      },
-      "user registered successfully",
-    ),
-  );
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  return res
+    .status(201)
+    .cookie("token", token, options)
+    .json(new ApiResponse(201, createdUser, "user registered successfully"));
 });
 
 const loginUser = asyncHandler(async (req, res) => {
@@ -101,25 +100,14 @@ const loginUser = asyncHandler(async (req, res) => {
     secure: true,
   };
 
+  const verifiedUser = await User.findById(user._id).select(
+    "-password -token -role -verificationPass",
+  );
+
   return res
     .status(200)
     .cookie("token", token, options)
-    .json(
-      new ApiResponse(
-        200,
-        {
-          user: {
-            _id: user._id,
-            name: user.name,
-            email,
-            verified: user.verified,
-            role: user.role,
-            token: token,
-          },
-        },
-        "Logged in successfully",
-      ),
-    );
+    .json(new ApiResponse(200, verifiedUser, "Logged in successfully"));
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
@@ -184,10 +172,19 @@ const verifyEmail = asyncHandler(async (req, res) => {
       returnDocument: "after",
     },
   );
-  const verifiedUser = await User.findById(user?._id);
+
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  const verifiedUser = await User.findById(user?._id).select(
+    "-password -token -verificationPass -role",
+  );
 
   return res
     .status(200)
+    .cookie("token", user?.token, options)
     .json(new ApiResponse(200, verifiedUser, "user verified successfully"));
 });
 
