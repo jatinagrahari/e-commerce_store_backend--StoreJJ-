@@ -24,7 +24,12 @@ const productSchema = new Schema(
     },
     images: [
       {
-        type: String, // cloudinary url
+        url: {
+          type: String, // cloudinary url
+        },
+        imageId: {
+          type: String, // cloudinary url
+        },
       },
     ],
     rating: {
@@ -36,7 +41,7 @@ const productSchema = new Schema(
       default: 0,
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 export const Product = mongoose.model("Product", productSchema);

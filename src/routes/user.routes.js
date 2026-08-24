@@ -5,7 +5,7 @@ import {
   logoutUser,
   getUsers,
   verifyEmail,
-} from "../../controllers/user.controller.js";
+} from "../controllers/user.controller.js";
 import { verifyJWT } from "../middleware/auth.middleware.js";
 import { admin } from "../middleware/admin.middleware.js";
 

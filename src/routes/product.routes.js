@@ -1,18 +1,22 @@
 import { Router } from "express";
-import { verifyJWT } from "../middleware/auth.middleware.js";
-import { admin } from "../middleware/admin.middleware.js";
+import { verifyJWT } from "../../middleware/auth.middleware.js";
+import { admin } from "../../middleware/admin.middleware.js";
 import {
   getAllProducts,
-  getProduct,
   createProduct,
+  getProduct,
   updateProduct,
   deleteProduct,
-} from "../../controllers/product.controller.js";
+} from "../controllers/product.controller.js";
+import { upload } from "../middlewares/multer.middleware.js";
 
 const router = Router();
 
 // all products
-router.route("/").get(getAllProducts).post(verifyJWT, admin, createProduct);
+router
+  .route("/")
+  .get(getAllProducts)
+  .post(verifyJWT, admin, upload.array("images", 10), createProduct);
 
 // specific product
 router
