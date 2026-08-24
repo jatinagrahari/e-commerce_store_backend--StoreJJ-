@@ -1,4 +1,4 @@
-import { User } from "../models/user.model.js";
+import { User } from "../src/models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -133,12 +133,16 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 
 const getUsers = asyncHandler(async (req, res) => {
-  const users = await User.find({}).select("-password");
+  const users = await User.find({}).select(
+    "-password -verificationPass -token ",
+  );
   if (!users) {
     throw new ApiError(500, "server error");
   }
 
-  return res.status(200).json(200, users, "Users fetched successfully");
+  return res
+    .status(200)
+    .json(new ApiResponse(200, users, "Users fetched successfully"));
 });
 
 const verifyEmail = asyncHandler(async (req, res) => {

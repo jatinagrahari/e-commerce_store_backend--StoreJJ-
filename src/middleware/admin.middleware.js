@@ -1,6 +1,6 @@
 import { ApiError } from "../utils/ApiError.js";
 
-const admin = (req, res, next) => {
+const admin = (req, _, next) => {
   if (req.user && req.user.role === "admin") {
     next();
   } else {
