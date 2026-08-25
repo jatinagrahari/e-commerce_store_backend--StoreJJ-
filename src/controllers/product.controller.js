@@ -80,7 +80,7 @@ const createProduct = asyncHandler(async (req, res) => {
 });
 
 const updateProduct = asyncHandler(async (req, res) => {
-  const { name, description, price, category, stock, images } = req.body;
+  const { name, description, price, category, stock, images = "[]" } = req.body;
 
   if (
     [name, description, price, category, stock].some(
@@ -118,33 +118,31 @@ const updateProduct = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Atleast one Image is required");
   }
 
+  const oldImages = JSON.parse(images);
+  const oldImageIds = oldImages.map((image) => image._id.toString());
+  let imagesToKeep = [];
+  let imagesToDelete = [];
   let allImages = [];
 
-  if (images) {
-    const oldImages = JSON.parse(images);
-    const oldImageIds = oldImages.map((image) => image._id.toString());
-    let imagesToKeep = [];
-    let imagesToDelete = [];
-
-    for (const image of product.images) {
-      const existingImageId = image._id;
-      if (oldImageIds.includes(existingImageId.toString())) {
-        imagesToKeep.push(image);
-      } else {
-        imagesToDelete.push(image);
-      }
-    }
-
-    if (imagesToDelete.length > 0) {
-      for (const image of imagesToDelete) {
-        await deleteFileOnCloudinary(image.imageId);
-      }
-    }
-
-    if (imagesToKeep.length > 0) {
-      allImages.push(...imagesToKeep);
+  for (const image of product.images) {
+    const existingImageId = image._id;
+    if (oldImageIds.includes(existingImageId.toString())) {
+      imagesToKeep.push(image);
+    } else {
+      imagesToDelete.push(image);
     }
   }
+
+  if (imagesToDelete.length > 0) {
+    for (const image of imagesToDelete) {
+      await deleteFileOnCloudinary(image.imageId);
+    }
+  }
+
+  if (imagesToKeep.length > 0) {
+    allImages.push(...imagesToKeep);
+  }
+
   if (req.files && req.files.length > 0) {
     const uploadedImages = await Promise.all(
       req.files.map(async (image) => {
