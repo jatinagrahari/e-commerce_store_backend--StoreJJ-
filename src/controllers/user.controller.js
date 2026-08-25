@@ -1,4 +1,4 @@
-import { User } from "../src/models/user.model.js";
+import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -56,7 +56,7 @@ const registerUser = asyncHandler(async (req, res) => {
   const { token } = await generateToken(user._id);
 
   const createdUser = await User.findOne({ email }).select(
-    "-password -verificationPass -token -role",
+    "-password -verificationPass -token -role"
   );
 
   if (!createdUser) {
@@ -101,7 +101,7 @@ const loginUser = asyncHandler(async (req, res) => {
   };
 
   const verifiedUser = await User.findById(user._id).select(
-    "-password -token -role -verificationPass",
+    "-password -token -role -verificationPass"
   );
 
   return res
@@ -120,7 +120,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     },
     {
       returnDocument: "after",
-    },
+    }
   );
   const options = {
     httpOnly: true,
@@ -134,7 +134,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 const getUsers = asyncHandler(async (req, res) => {
   const users = await User.find({}).select(
-    "-password -verificationPass -token ",
+    "-password -verificationPass -token "
   );
   if (!users) {
     throw new ApiError(500, "server error");
@@ -174,7 +174,7 @@ const verifyEmail = asyncHandler(async (req, res) => {
     },
     {
       returnDocument: "after",
-    },
+    }
   );
 
   const options = {
@@ -183,7 +183,7 @@ const verifyEmail = asyncHandler(async (req, res) => {
   };
 
   const verifiedUser = await User.findById(user?._id).select(
-    "-password -token -verificationPass -role",
+    "-password -token -verificationPass -role"
   );
 
   return res

@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { verifyJWT } from "../../middleware/auth.middleware.js";
-import { admin } from "../../middleware/admin.middleware.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { admin } from "../middlewares/admin.middleware.js";
 import {
   getAllProducts,
   createProduct,
@@ -16,13 +16,13 @@ const router = Router();
 router
   .route("/")
   .get(getAllProducts)
-  .post(verifyJWT, admin, upload.array("images", 10), createProduct);
+  .post(verifyJWT, admin, upload.array("images", 6), createProduct);
 
 // specific product
 router
   .route("/:id")
   .get(getProduct)
-  .put(verifyJWT, admin, updateProduct)
+  .put(verifyJWT, admin, upload.array("images", 6), updateProduct)
   .delete(verifyJWT, admin, deleteProduct);
 
 export default router;
