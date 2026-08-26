@@ -8,12 +8,13 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const uploadOnCloudinary = async (localFilePath) => {
+const uploadProductImagesOnCloudinary = async (localFilePath) => {
   try {
     if (!localFilePath) return null;
     // upload the file on cloudinary
     const response = await cloudinary.uploader.upload(localFilePath, {
       resource_type: "auto",
+      folder: "storejj/productsImages",
     });
 
     // file has been uploaded
@@ -41,4 +42,4 @@ const deleteFileOnCloudinary = async (publicId, resourceType = "image") => {
   }
 };
 
-export { uploadOnCloudinary, deleteFileOnCloudinary };
+export { uploadProductImagesOnCloudinary, deleteFileOnCloudinary };

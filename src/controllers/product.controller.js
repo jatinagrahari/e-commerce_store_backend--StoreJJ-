@@ -4,7 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { Product } from "../models/product.model.js";
 import {
   deleteFileOnCloudinary,
-  uploadOnCloudinary,
+  uploadProductImagesOnCloudinary,
 } from "../utils/cloudinary.js";
 
 const getAllProducts = asyncHandler(async (_, res) => {
@@ -48,7 +48,7 @@ const createProduct = asyncHandler(async (req, res) => {
 
   const imageurls = await Promise.all(
     req.files.map(async (file) => {
-      const uploadedImage = await uploadOnCloudinary(file.path);
+      const uploadedImage = await uploadProductImagesOnCloudinary(file.path);
 
       if (!uploadedImage) {
         throw new ApiError(400, "image upload failed");
@@ -146,7 +146,7 @@ const updateProduct = asyncHandler(async (req, res) => {
   if (req.files && req.files.length > 0) {
     const uploadedImages = await Promise.all(
       req.files.map(async (image) => {
-        const uploadImage = await uploadOnCloudinary(image.path);
+        const uploadImage = await uploadProductImagesOnCloudinary(image.path);
 
         if (!uploadImage) {
           throw new ApiError(400, "Image upload failed");
