@@ -19,20 +19,21 @@ const orderSchema = new Schema(
           required: true,
           min: 1,
         },
-        price: {
-          type: Number,
-          required: true,
-        },
       },
     ],
     totalAmount: {
       type: Number,
       required: true,
     },
-    address: {
-      type: Schema.Types.ObjectId,
-      ref: "Address",
-      required: true,
+    shippingAddress: {
+      fullName: { type: String, required: true },
+      mobileNumber: { type: String, required: true },
+      houseNumber: { type: String, required: true },
+      street: { type: String, required: true },
+      city: { type: String, required: true },
+      postCode: { type: String, required: true },
+      state: { type: String, required: true },
+      country: { type: String, required: true },
     },
     paymentId: {
       type: String,

@@ -36,8 +36,14 @@ const userSchema = new Schema(
         type: Date,
       },
     },
+    // addresses: [
+    //   {
+    //     type: Schema.Types.ObjectId,
+    //     ref: "Address",
+    //   },
+    // ],
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 userSchema.pre("save", async function (next) {

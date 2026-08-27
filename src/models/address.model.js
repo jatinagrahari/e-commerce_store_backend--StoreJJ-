@@ -8,7 +8,6 @@ const addressSchema = new Schema(
       required: true,
       unique: true,
     },
-
     addresses: [
       {
         fullName: {
