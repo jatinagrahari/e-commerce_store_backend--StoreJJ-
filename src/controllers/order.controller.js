@@ -58,6 +58,20 @@ const createOrder = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Order creation failed");
   }
 
+  for (const item of products) {
+    const matchedProduct = qtyMap.get(item.productId.toString());
+    const product = await Product.findByIdAndUpdate(
+      matchedProduct._id,
+      {
+        $inc: { stock: -item.quantity },
+      },
+      { returnDocument: "after" }
+    );
+    if (!product) {
+      throw new ApiError(500, "quantity updation failed");
+    }
+  }
+
   const message = orderConfirmationEmail({
     name: req.user.name,
     orderId: orderCreated._id,
