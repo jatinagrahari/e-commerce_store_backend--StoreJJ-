@@ -6,6 +6,7 @@ import { Order } from "../models/order.model.js";
 import { User } from "../models/user.model.js";
 import { Product } from "../models/product.model.js";
 import { orderConfirmationEmail } from "../templates/orderConfirmationEmail.js";
+import { Address } from "../models/address.model.js";
 
 const createOrder = asyncHandler(async (req, res) => {
   const { products, shippingAddress, paymentId = "" } = req.body;
@@ -46,6 +47,16 @@ const createOrder = asyncHandler(async (req, res) => {
     totalPrice = totalPrice + Number(matchedProduct.price) * item.quantity;
   }
 
+  await Address.findOneAndUpdate(
+    { user: req.user.id },
+    {
+      $push: {
+        address: shippingAddress,
+      },
+    },
+    { returnDocument: "after", upsert: true }
+  );
+
   const orderCreated = await Order.create({
     user: req.user._id,
     products,
@@ -60,10 +71,13 @@ const createOrder = asyncHandler(async (req, res) => {
 
   for (const item of products) {
     const matchedProduct = qtyMap.get(item.productId.toString());
+
+    const qty = Number(matchedProduct.stock) - Number(item.quantity);
+
     const product = await Product.findByIdAndUpdate(
       matchedProduct._id,
       {
-        $inc: { stock: -item.quantity },
+        $set: { stock: qty },
       },
       { returnDocument: "after" }
     );
