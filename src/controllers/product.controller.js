@@ -32,7 +32,7 @@ const getProduct = asyncHandler(async (req, res) => {
 });
 
 const createProduct = asyncHandler(async (req, res) => {
-  const { name, description, price, category, stock } = req.body;
+  const { name, description, price, category, stock, discount = 0 } = req.body;
 
   if (
     [name, description, price, category, stock].some(
@@ -61,12 +61,17 @@ const createProduct = asyncHandler(async (req, res) => {
     })
   );
 
+  // the discount we recive from frontend will be evaluated in the percentage
+  const priceAfterDiscount = price - (discount * price) / 100;
+
   const product = await Product.create({
     name,
     description,
     price,
     category,
     stock,
+    discount,
+    discountedPrice: priceAfterDiscount,
     images: imageurls,
   });
 

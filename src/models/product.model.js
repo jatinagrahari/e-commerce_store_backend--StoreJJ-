@@ -32,6 +32,13 @@ const productSchema = new Schema(
         },
       },
     ],
+    discount: {
+      type: Number,
+      default: 0,
+    },
+    discountedPrice: {
+      type: Number,
+    },
     rating: {
       type: Number,
       default: 0,
