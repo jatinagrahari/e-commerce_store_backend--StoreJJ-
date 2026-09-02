@@ -22,6 +22,7 @@ import orderRouter from "./routes/order.routes.js";
 import paymentRouter from "./routes/payment.routes.js";
 import analyticsRouter from "./routes/analytics.routes.js";
 import addressRouter from "./routes/address.routes.js";
+import cartRouter from "./routes/cart.routes.js";
 
 // routes declaration
 app.use("/api/v1/auth", userRouter);
@@ -30,5 +31,6 @@ app.use("/api/v1/orders", orderRouter);
 app.use("/api/v1/address", addressRouter);
 app.use("/api/v1/payment", paymentRouter);
 app.use("/api/v1/analytics", analyticsRouter);
+app.use("/api/v1/cart", cartRouter);
 
 export { app };

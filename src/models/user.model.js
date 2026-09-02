@@ -42,6 +42,30 @@ const userSchema = new Schema(
     //     ref: "Address",
     //   },
     // ],
+    cartItems: [
+      {
+        product: {
+          type: Schema.Types.ObjectId,
+          ref: "Product",
+        },
+        quantity: {
+          type: Number,
+          default: 1,
+          required: true,
+          min: 1,
+        },
+      },
+    ],
+    totalCartPrice: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+    totalCartDiscountedPrice: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
   },
   { timestamps: true }
 );
