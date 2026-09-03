@@ -56,7 +56,7 @@ const registerUser = asyncHandler(async (req, res) => {
   const { token } = await generateToken(user._id);
 
   const createdUser = await User.findOne({ email }).select(
-    "-password -verificationPass -token -role"
+    "-password -verificationPass -token"
   );
 
   if (!createdUser) {
@@ -101,7 +101,7 @@ const loginUser = asyncHandler(async (req, res) => {
   };
 
   const verifiedUser = await User.findById(user._id).select(
-    "-password -token -role -verificationPass"
+    "-password -token -verificationPass"
   );
 
   return res
@@ -183,7 +183,7 @@ const verifyEmail = asyncHandler(async (req, res) => {
   };
 
   const verifiedUser = await User.findById(user?._id).select(
-    "-password -token -verificationPass -role"
+    "-password -token -verificationPass "
   );
 
   return res
