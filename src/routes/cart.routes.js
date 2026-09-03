@@ -4,6 +4,6 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-router.route("/add").post(verifyJWT, updateCart);
+router.route("/update").post(verifyJWT, updateCart);
 
 export default router;

@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import { Product } from "../models/product.model.js";
+import mongoose from "mongoose";
 
 const updateCart = asyncHandler(async (req, res) => {
   const { products } = req.body;
@@ -81,41 +82,42 @@ const updateCart = asyncHandler(async (req, res) => {
   user.totalCartDiscountedPrice = totalCartDiscountedAmount;
   await user.save();
 
-  return res.status(200).json(
-    new ApiResponse(
-      200,
-      {
-        cartItems: user.cartItems,
-        totalCartPrice: user.totalCartPrice,
-        totalCartDiscountedPrice: user.totalCartDiscountedPrice,
+  const response = await User.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(req.user._id),
       },
-      "Items added to cart successfully"
-    )
-  );
+    },
+    {
+      $unwind: "$cartItems",
+    },
+    {
+      $lookup: {
+        from: "products",
+        localField: "cartItems.product",
+        foreignField: "_id",
+        as: "product",
+      },
+    },
+    {
+      $unwind: "$product",
+    },
+    {
+      $project: {
+        _id: 0,
+        product: "$product",
+        quantity: "$cartItems.quantity",
+        totalCartDiscountedPrice: 1,
+        totalCartPrice: 1,
+      },
+    },
+  ]);
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, response[0], "Items added to cart successfully")
+    );
 });
 
-// const updateCartItem = asyncHandler(async (req, res) => {
-//   const { products } = req.body;
-
-//   if (!products || products.length === 0) {
-//     throw new ApiError(400, "please add atleast one product");
-//   }
-
-//   const user = await User.findById(req.user?._id);
-
-//   if (!user) {
-//     throw new ApiError("user not found ");
-//   }
-
-//   const itemsIds = products.map((item) => item.product.toString())
-//   let cartItemsToDelete = []
-//   const cartItemsToKeep = []
-
-//   for (const item of user.cartItems) {
-//     if(itemsIds.includes(item.product.toString())){
-//       cartItemsToKeep.push(item)
-//     }
-//   }
-
-// });
 export { updateCart };
