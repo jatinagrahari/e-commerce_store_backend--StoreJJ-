@@ -34,12 +34,14 @@ const verifyPayment = asyncHandler(async (req, res) => {
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
     req.body;
 
-  const generated_signature = crypto;
-  createHmac("sha256", process.env.RAZORPAY_API_SECRET)
+  const generated_signature = createHmac(
+    "sha256",
+    process.env.RAZORPAY_API_SECRET
+  )
     .update(razorpay_order_id + "|" + razorpay_payment_id)
     .digest("hex");
 
-  if (!(generated_signature === razorpay_signature)) {
+  if (generated_signature !== razorpay_signature) {
     throw new ApiError(400, "payment verification failed");
   }
 

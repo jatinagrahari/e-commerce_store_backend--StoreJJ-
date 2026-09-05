@@ -222,6 +222,18 @@ const resendOtp = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, {}, "otp generated successfully"));
 });
 
+// const test = asyncHandler(async (req, res) => {
+//   const { email } = req.body;
+
+//   const otp = 123;
+
+//   const message = verificationEmail(otp);
+
+//   await sendEmail(email, "verify jj acc ", message);
+
+//   return res.status(200).json(new ApiResponse(200, {}, "email sent"));
+// });
+
 export {
   registerUser,
   loginUser,
