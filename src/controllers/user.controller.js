@@ -20,6 +20,13 @@ const generateToken = async (userId) => {
   }
 };
 
+const generateOtp = () => {
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const expiryTime = new Date(Date.now() + 10 * 60 * 1000);
+
+  return { otp, expiryTime };
+};
+
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -42,10 +49,10 @@ const registerUser = asyncHandler(async (req, res) => {
   if (!user) {
     throw new ApiError(500, "Something went wrong registering the user");
   }
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const { otp, expiryTime } = generateOtp();
 
   user.verificationPass.otp = otp;
-  user.verificationPass.expiryTime = new Date(Date.now() + 10 * 60 * 1000);
+  user.verificationPass.expiryTime = expiryTime;
 
   await user.save({ validateBeforeSave: true });
 
@@ -192,4 +199,34 @@ const verifyEmail = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, verifiedUser, "user verified successfully"));
 });
 
-export { registerUser, loginUser, logoutUser, getUsers, verifyEmail };
+const resendOtp = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user?._id);
+
+  if (!user) {
+    throw new ApiError(400, "user not found");
+  }
+
+  const { otp, expiryTime } = generateOtp();
+
+  user.verificationPass.otp = otp;
+  user.verificationPass.expiryTime = expiryTime;
+
+  await user.save({ validateBeforeSave: true });
+
+  const message = verificationEmail(otp);
+
+  await sendEmail(user.email, "Verify your Store JJ account", message);
+
+  return res
+    .status(201)
+    .json(new ApiResponse(201, {}, "otp generated successfully"));
+});
+
+export {
+  registerUser,
+  loginUser,
+  logoutUser,
+  getUsers,
+  verifyEmail,
+  resendOtp,
+};

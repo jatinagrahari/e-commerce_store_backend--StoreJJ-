@@ -135,37 +135,6 @@ const verificationEmail = (otp) => {
               </table>
 
 
-              <!-- Verify Button -->
-              <table
-                role="presentation"
-                cellspacing="0"
-                cellpadding="0"
-                border="0"
-                width="100%"
-                style="margin-top: 20px;"
-              >
-                <tr>
-                  <td align="center">
-                    <a
-                      href="#"
-                      style="
-                        display: block;
-                        padding: 16px 20px;
-                        background-color: #16a085;
-                        color: #ffffff;
-                        text-decoration: none;
-                        font-size: 14px;
-                        font-weight: 700;
-                        border-radius: 6px;
-                      "
-                    >
-                      VERIFY &amp; CONTINUE
-                    </a>
-                  </td>
-                </tr>
-              </table>
-
-
               <!-- Expiry -->
               <p style="
                 margin: 22px 0 0;

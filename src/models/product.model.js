@@ -22,6 +22,14 @@ const productSchema = new Schema(
       type: Number,
       required: true,
     },
+    // thumbnail: {
+    //   url: {
+    //     type: String,
+    //   },
+    //   imageId: {
+    //     type: String,
+    //   },
+    // },
     images: [
       {
         url: {
