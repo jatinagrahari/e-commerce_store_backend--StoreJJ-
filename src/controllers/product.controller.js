@@ -33,10 +33,9 @@ const getProduct = asyncHandler(async (req, res) => {
 
 const createProduct = asyncHandler(async (req, res) => {
   const { name, description, price, category, stock, discount = 0 } = req.body;
-
   if (
     [name, description, price, category, stock].some(
-      (feild) => feild.trim() == ""
+      (field) => !field || field.trim() == ""
     )
   ) {
     throw new ApiError(400, "all feilds are required");
