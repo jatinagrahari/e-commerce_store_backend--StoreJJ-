@@ -7,6 +7,7 @@ import { User } from "../models/user.model.js";
 import { Product } from "../models/product.model.js";
 import { orderConfirmationEmail } from "../templates/orderConfirmationEmail.js";
 import { Address } from "../models/address.model.js";
+import mongoose from "mongoose";
 
 const createOrder = asyncHandler(async (req, res) => {
   const { products, shippingAddress, paymentId = "" } = req.body;
@@ -185,7 +186,6 @@ const myOrders = asyncHandler(async (req, res) => {
   if (!orders) {
     throw new ApiError(400, "no orders found");
   }
-
   return res
     .status(200)
     .json(new ApiResponse(200, orders, "orders fetched successfully"));
